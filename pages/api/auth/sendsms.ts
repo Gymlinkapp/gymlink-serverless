@@ -24,7 +24,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const input: Input = req.body;
-  console.log('input', input);
+
+  console.log('test');
 
   try {
     await client.messages.create({
@@ -34,7 +35,11 @@ export default async function handler(
     });
   } catch (error) {
     console.log(error);
-    throw new Error('error');
+
+    res.status(401).json({
+      error: 'Unauthorized',
+    });
+    return;
   }
 
   // if the user already exists
@@ -97,6 +102,8 @@ export default async function handler(
     });
   } catch (error) {
     console.log(error);
+
+    console.log(accountSid, authToken);
     throw new Error('error');
   }
 }
