@@ -43,41 +43,13 @@ export default async function handlder(
             id: user.id,
           },
         },
-        monday: {
-          create: {
-            excercises: input.split[0].excercises,
-          },
-        },
-        tuesday: {
-          create: {
-            excercises: input.split[1].excercises,
-          },
-        },
-        wednesday: {
-          create: {
-            excercises: input.split[2].excercises,
-          },
-        },
-        thursday: {
-          create: {
-            excercises: input.split[3].excercises,
-          },
-        },
-        friday: {
-          create: {
-            excercises: input.split[4].excercises,
-          },
-        },
-        saturday: {
-          create: {
-            excercises: input.split[5].excercises,
-          },
-        },
-        sunday: {
-          create: {
-            excercises: input.split[6].excercises,
-          },
-        },
+        monday: [input.split[0].excercises],
+        tuesday: [input.split[1].excercises],
+        wednesday: [input.split[2].excercises],
+        thursday: [input.split[3].excercises],
+        friday: [input.split[4].excercises],
+        saturday: [input.split[5].excercises],
+        sunday: [input.split[6].excercises],
       },
     });
 

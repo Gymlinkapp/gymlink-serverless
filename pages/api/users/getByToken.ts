@@ -26,6 +26,10 @@ export default async function handler(
       where: {
         email: decoded.email,
       },
+      include: {
+        split: true,
+        feed: true,
+      },
     });
 
     if (!user) throw new Error('User not found');
