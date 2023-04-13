@@ -46,9 +46,7 @@ export default async function handler(
         firstName: input.firstName || user.firstName,
         lastName: input.lastName || user.lastName,
         email: input.email || user.email,
-        tags: {
-          set: input.tags || user.tags,
-        },
+        tags: [input.tags || user.tags],
         authSteps:
           input.authSteps !== undefined ? input.authSteps : user.authSteps,
       },
