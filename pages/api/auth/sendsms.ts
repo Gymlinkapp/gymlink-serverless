@@ -71,11 +71,12 @@ export default async function handler(
 
       console.log('saved code', newUser.verificationCode);
 
-      return res.status(200).json({
+      res.status(200).json({
         message: 'SMS Sent',
         authStep: newUser.authSteps,
         code: newUser.verificationCode,
       });
+      return;
     }
 
     const existingUser = await prisma.user.update({
@@ -89,7 +90,7 @@ export default async function handler(
 
     console.log('saved code on existing user', existingUser.verificationCode);
 
-    return res.status(200).json({
+    res.status(200).json({
       message: 'SMS Sent',
       authStep: existingUser.authSteps,
       code: existingUser.verificationCode,
