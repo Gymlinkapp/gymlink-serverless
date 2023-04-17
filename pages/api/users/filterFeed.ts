@@ -19,6 +19,8 @@ export type Filter = {
 type Input = {
   token: string;
   filters: Filter[];
+  page?: number;
+  limit?: number;
 };
 
 export default async function handler(
@@ -28,6 +30,12 @@ export default async function handler(
   const input = req.body as Input;
   const decoded = decode(input.token as string) as JWT;
   console.log('htting', input.filters);
+
+  const page = input.page || 1;
+  const limit = input.limit || 10;
+  const offset = (page - 1) * limit;
+
+  console.log(page, limit, offset);
 
   try {
     const user = await prisma.user.findUnique({
@@ -68,10 +76,15 @@ export default async function handler(
 
     const filteredFeed = filterFeedHelper(user.feed, userWithFilters);
 
+    // Apply pagination to the filtered feed
+    const paginatedFeed = filteredFeed
+      .filter((user) => user.id !== userWithFilters.id)
+      .slice(offset, offset + limit);
+
     console.log(filteredFeed.map((user) => user.firstName));
 
     res.status(200).json({
-      feed: filteredFeed.filter((user) => user.id !== userWithFilters.id),
+      feed: paginatedFeed.filter((user) => user.id !== userWithFilters.id),
       message: 'Feed filtered',
     });
   } catch (error) {

@@ -13,6 +13,8 @@ type Data = {
 
 type Input = {
   token: string;
+  offset?: number;
+  limit?: number;
 };
 
 export default async function handler(
@@ -21,6 +23,9 @@ export default async function handler(
 ) {
   const input = req.body as Input;
   const decoded = decode(input.token as string) as JWT;
+
+  const offset = input.offset || 0;
+  const limit = input.limit || 10;
 
   try {
     const user = await prisma.user.findUnique({
@@ -85,9 +90,17 @@ export default async function handler(
       },
     });
 
+    const loadMoreFeed = usersToAdd.slice(offset, offset + limit);
+
+    console.log(
+      loadMoreFeed.map((u) => u.firstName),
+      offset,
+      limit
+    );
+
     res.status(200).json({
       message: 'Users found',
-      users: usersToAdd,
+      users: loadMoreFeed,
     });
   } catch (error) {
     console.log(error);
