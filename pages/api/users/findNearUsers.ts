@@ -9,10 +9,13 @@ import { User } from '@prisma/client';
 
 type Data = {
   users?: User[];
+  totalUsers?: number;
 } & GenericData;
 
 type Input = {
   token: string;
+  offset?: number;
+  limit?: number;
 };
 
 export default async function handler(
@@ -21,6 +24,9 @@ export default async function handler(
 ) {
   const input = req.body as Input;
   const decoded = decode(input.token as string) as JWT;
+
+  const offset = input.offset || 0;
+  const limit = input.limit || 9;
 
   try {
     const user = await prisma.user.findUnique({
@@ -85,9 +91,30 @@ export default async function handler(
       },
     });
 
+    let loadedMoreFeed: User[];
+
+    const totalUsers = usersToAdd.length;
+
+    // if offset is less than total users, we can load more
+    if (offset < totalUsers) {
+      console.log('we good');
+      loadedMoreFeed = usersToAdd.slice(offset, offset + limit);
+    } else {
+      console.log('we not good');
+      loadedMoreFeed = usersToAdd;
+    }
+
+    console.log(
+      loadedMoreFeed.map((u) => u.firstName),
+      offset,
+      limit,
+      totalUsers
+    );
+
     res.status(200).json({
       message: 'Users found',
-      users: usersToAdd,
+      users: loadedMoreFeed,
+      totalUsers,
     });
   } catch (error) {
     console.log(error);
