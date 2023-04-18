@@ -9,6 +9,7 @@ import { User } from '@prisma/client';
 
 type Data = {
   users?: User[];
+  totalUsers?: number;
 } & GenericData;
 
 type Input = {
@@ -90,17 +91,30 @@ export default async function handler(
       },
     });
 
-    const loadMoreFeed = usersToAdd.slice(offset, offset + limit);
+    let loadedMoreFeed: User[];
+
+    const totalUsers = usersToAdd.length;
+
+    // if offset is less than total users, we can load more
+    if (offset < totalUsers) {
+      console.log('we good');
+      loadedMoreFeed = usersToAdd.slice(offset, offset + limit);
+    } else {
+      console.log('we not good');
+      loadedMoreFeed = usersToAdd;
+    }
 
     console.log(
-      loadMoreFeed.map((u) => u.firstName),
+      loadedMoreFeed.map((u) => u.firstName),
       offset,
-      limit
+      limit,
+      totalUsers
     );
 
     res.status(200).json({
       message: 'Users found',
-      users: loadMoreFeed,
+      users: loadedMoreFeed,
+      totalUsers,
     });
   } catch (error) {
     console.log(error);

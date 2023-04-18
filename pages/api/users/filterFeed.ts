@@ -81,8 +81,6 @@ export default async function handler(
       .filter((user) => user.id !== userWithFilters.id)
       .slice(offset, offset + limit);
 
-    console.log(filteredFeed.map((user) => user.firstName));
-
     res.status(200).json({
       feed: paginatedFeed.filter((user) => user.id !== userWithFilters.id),
       message: 'Feed filtered',
