@@ -25,7 +25,7 @@ export default async function handler(
   const decoded = decode(input.token as string) as JWT;
 
   const offset = input.offset || 0;
-  const limit = input.limit || 10;
+  const limit = input.limit || 9;
 
   try {
     const user = await prisma.user.findUnique({
