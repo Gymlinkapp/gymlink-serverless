@@ -8,19 +8,20 @@ export const findNearUsers = async (
   logs?: boolean
 ): Promise<User[]> => {
   // get user's current gym
-  // const users = await prisma.user.findMany({
-  //   include: {
-  //     chats: {
-  //       select: {
-  //         participants: {
-  //           select: {
-  //             id: true,
-  //           },
-  //         },
-  //       },
-  //     },
-  //   },
-  // });
+  const users = await prisma.user.findMany({
+    include: {
+      chats: {
+        select: {
+          participants: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
   const gymLocations = await prisma.gym.findMany();
 
   type Coords = {
@@ -55,7 +56,7 @@ export const findNearUsers = async (
   }
 
   async function filterUsers() {
-    const filteredUsersPromises = feed.map(async (user) => {
+    const filteredUsersPromises = users.map(async (user) => {
       const userLocation = {
         latitude: user.latitude as number,
         longitude: user.longitude as number,
