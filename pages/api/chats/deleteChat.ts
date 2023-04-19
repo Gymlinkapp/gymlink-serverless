@@ -17,6 +17,10 @@ export default async function handler(
     where: {
       id: input.chatId,
     },
+    include: {
+      user: true,
+      participants: true,
+    },
   });
 
   if (!chat) {
@@ -38,6 +42,36 @@ export default async function handler(
   await prisma.chat.delete({
     where: {
       id: input.chatId,
+    },
+  });
+
+  // reconnect the user on the feed
+  const userAId = chat.participants[0].id;
+  const userBId = chat.participants[1].id;
+
+  await prisma.user.update({
+    where: {
+      id: userAId,
+    },
+    data: {
+      feed: {
+        connect: {
+          id: userBId,
+        },
+      },
+    },
+  });
+
+  await prisma.user.update({
+    where: {
+      id: userBId,
+    },
+    data: {
+      feed: {
+        connect: {
+          id: userAId,
+        },
+      },
     },
   });
 

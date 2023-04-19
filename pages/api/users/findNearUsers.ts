@@ -34,16 +34,19 @@ export default async function handler(
         email: decoded.email,
       },
       include: {
-        chats: {
-          select: {
-            user: {
+        feed: {
+          include: {
+            chats: {
               select: {
-                id: true,
+                participants: {
+                  select: {
+                    id: true,
+                  },
+                },
               },
             },
           },
         },
-        feed: true,
       },
     });
 
@@ -51,12 +54,24 @@ export default async function handler(
       console.log('User not found');
       throw new Error('User not found');
     }
-    const users = await findNearUsers(user);
 
-    // remove users that are already in the user's chat list
-    let usersToAdd = users.filter(
-      (u) => !user.chats.some((c) => c.user?.id === u.id)
-    );
+    if (!user.feed) {
+      console.log('User feed not found');
+      throw new Error('User feed not found');
+    }
+    const users = await findNearUsers(user.feed, user);
+
+    // if the user has a chat with the user, remove the user from the feed
+    let usersToAdd = users.filter((u) => {
+      // @ts-expect-error -- actually has chats accessible.
+      const hasChatWithUser = u.chats.some((chat) =>
+        chat.participants.some(
+          (participants: { id: string }) => participants.id === user.id
+        )
+      );
+
+      return !hasChatWithUser;
+    });
 
     const userGenderFilers = user.filterGender as string[];
     const userGoalFilters = user.filterGoals as string[];
