@@ -22,6 +22,12 @@ export default async function handler(
       },
     },
     include: {
+      messages: {
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 1,
+      },
       participants: true,
     },
   });
