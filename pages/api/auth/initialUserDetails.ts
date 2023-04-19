@@ -39,7 +39,7 @@ export default async function handler(
     if (!user.verified) throw new Error('User not verified');
 
     const token = jwt.sign(
-      { email: user.email },
+      { email: input.email },
       process.env.JWT_SECRET as string,
       {
         expiresIn: '1d',
