@@ -20,6 +20,13 @@ export default async function handler(
   res: NextApiResponse<Data>
 ) {
   const input = req.body as Input;
+  console.log('input', input);
+  if (!input.token) {
+    res.status(400).json({
+      message: 'No token provided',
+    });
+    return;
+  }
   try {
     const decoded = decode(input.token as string) as JWT;
     const user = await prisma.user.findUnique({
@@ -32,7 +39,15 @@ export default async function handler(
       },
     });
 
-    if (!user) throw new Error('User not found');
+    if (!user) {
+      if (!user) {
+        res.status(404).json({
+          message: 'User not found',
+        });
+
+        return;
+      }
+    }
 
     res.status(200).json({
       message: 'User found',
