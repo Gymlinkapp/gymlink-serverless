@@ -70,7 +70,7 @@ export default async function handler(
     res.status(200).json({
       message: 'User details updated',
       authStep: updatedUser.authSteps,
-      token: user.tempJWT as string,
+      token: token as string,
     });
   } catch (error) {
     console.log(error);
