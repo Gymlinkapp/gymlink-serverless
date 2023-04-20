@@ -18,6 +18,8 @@ type Input = {
     longitude: number;
   };
   authSteps: number;
+  longitude: number;
+  latitude: number;
 };
 export default async function handler(
   req: NextApiRequest,
@@ -33,6 +35,9 @@ export default async function handler(
   });
 
   if (!user) throw new Error('User not found');
+  if (!input.latitude || !input.longitude) throw new Error('No location');
+
+  console.log('input', input);
 
   const gym = await prisma.gym.findFirst({
     where: {
@@ -61,6 +66,8 @@ export default async function handler(
         id: user.id,
       },
       data: {
+        longitude: input.longitude,
+        latitude: input.latitude,
         gym: {
           connect: {
             id: newGym.id,
@@ -83,6 +90,8 @@ export default async function handler(
     },
     data: {
       authSteps: input.authSteps,
+      longitude: input.longitude,
+      latitude: input.latitude,
 
       gym: {
         connect: {
