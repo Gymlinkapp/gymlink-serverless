@@ -7,6 +7,16 @@ type Coord = {
   longitude: number;
 };
 
+/**
+ * The haversineDistance function calculates the distance between two coordinates on Earth using the
+ * Haversine formula.
+ * @param {Coord} coord1 - The first coordinate, which includes the latitude and longitude values of a
+ * location.
+ * @param {Coord} coord2 - `coord2` is an object representing the second set of coordinates, with
+ * properties `latitude` and `longitude`.
+ * @returns The function `haversineDistance` returns the distance in kilometers between two coordinates
+ * (`coord1` and `coord2`) using the Haversine formula.
+ */
 export function haversineDistance(coord1: Coord, coord2: Coord) {
   const R = 6371; // Earth's radius in kilometers
   const dLat = toRadians(coord2.latitude - coord1.latitude);
