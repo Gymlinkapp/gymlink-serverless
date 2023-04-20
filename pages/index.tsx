@@ -17,8 +17,7 @@ export default function Home() {
   useEffect(() => {
     // if localstorage password === env password
     if (localStorage.getItem('password') === process.env.NEXT_PUBLIC_PASSWORD) {
-      console.log('true');
-      fetch('http://localhost:3000/api/users/allUsers').then((res) =>
+      fetch(`${process.env.NEXT_PUBLIC_URL}/users/allUsers`).then((res) =>
         res.json().then((data) => setUsers(data.users))
       );
     }
