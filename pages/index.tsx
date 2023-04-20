@@ -1,6 +1,23 @@
 import Head from 'next/head';
+import { useEffect, useState } from 'react';
+
+type User = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  password?: string;
+  isBot: boolean;
+};
 
 export default function Home() {
+  const [users, setUsers] = useState<User[]>([]);
+
+  useEffect(() => {
+    fetch('http://localhost:3000/api/users/allUsers').then((res) =>
+      res.json().then((data) => setUsers(data.users))
+    );
+  }, []);
+
   return (
     <>
       <Head>
@@ -10,7 +27,37 @@ export default function Home() {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <main>
-        <h1>API</h1>
+        <h1>Users</h1>
+        <div>
+          <button
+            onClick={() => {
+              const filteredUsers = users.filter(
+                (user) => user.password === null || !user.isBot
+              );
+              setUsers(filteredUsers);
+            }}
+          >
+            Users
+          </button>
+        </div>
+        <ul className='grid grid-cols-3 gap-4'>
+          {users &&
+            users?.map((user) => (
+              <li
+                key={user.id}
+                className='flex items-center justify-center p-4 rounded shadow-sm'
+              >
+                <h4>
+                  {user.firstName} {user.lastName}
+                </h4>
+                {user.password && (
+                  <p className='bg-slate-100 text-xs px-8 py-2 rounded-full'>
+                    Bot
+                  </p>
+                )}
+              </li>
+            ))}
+        </ul>
       </main>
     </>
   );
