@@ -56,25 +56,29 @@ model User {
     Chat    Chat?
     splitId String?
     userId  String?
+
+    @@index([splitId])
+    @@index([gymId])
 }
 
 model Gym {
     id         String   @id @default(uuid())
     name       String
     location   Location @relation(fields: [locationId], references: [id])
-    radius     Float    @default(5)
+    radius     Float    @default(50)
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
     users      User[]
     locationId String
+
+    @@index([locationId])
 }
 
 model Location {
-    id     String @id @default(uuid())
-    lat    Float
-    long   Float
-    radius Float
-    Gym    Gym[]
+    id   String @id @default(uuid())
+    lat  Float
+    long Float
+    Gym  Gym[]
 }
 
 model Split {
@@ -110,4 +114,7 @@ model Message {
     sender    User     @relation(fields: [senderId], references: [id])
     content   String
     chat      Chat     @relation(fields: [chatId], references: [id])
+
+    @@index([senderId])
+    @@index([chatId])
 }
