@@ -53,7 +53,7 @@ export default async function handler(
 
         location: {
           create: {
-            radius: 5,
+            radius: 100, // km
             lat: input.gym.longitude,
             long: input.gym.latitude,
           },
