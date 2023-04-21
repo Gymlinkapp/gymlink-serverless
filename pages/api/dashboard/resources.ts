@@ -4,10 +4,11 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import prisma from '@/lib/prisma';
 import { GenericData } from '@/types/GenericData';
-import { User } from '@prisma/client';
+import { Chat, User } from '@prisma/client';
 
 type Data = {
   users?: User[];
+  chats?: Chat[];
 } & GenericData;
 
 export default async function handler(
@@ -17,6 +18,8 @@ export default async function handler(
   try {
     const users = await prisma.user.findMany();
 
+    const chats = await prisma.chat.findMany();
+
     if (!users) {
       console.log('Users not found');
       throw new Error('Users not found');
@@ -25,6 +28,7 @@ export default async function handler(
     res.status(200).json({
       message: 'Users found',
       users: users,
+      chats: chats,
     });
   } catch (error) {
     console.log(error);

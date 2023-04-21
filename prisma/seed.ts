@@ -289,7 +289,7 @@ async function createUser(prisma: any, userData: Prisma.UserCreateInput) {
 }
 
 async function main() {
-  const numberOfUsers = 20; // Change this value to create more or fewer users
+  const numberOfUsers = 75; // Change this value to create more or fewer users
 
   for (let i = 0; i < numberOfUsers; i++) {
     const randomUserData = generateRandomUserData();
@@ -297,7 +297,9 @@ async function main() {
     console.log(`Created user: ${newUser.firstName} ${newUser.lastName}`);
   }
 
-  const barbraJanson = await prisma.user.upsert({
+  const images = generateRandomImages(Sex.Female);
+
+  await prisma.user.upsert({
     where: { email: 'barbrajanson@gmail.com' },
     update: {},
     create: {
@@ -314,11 +316,7 @@ async function main() {
       filterWorkout: ['cardio', 'strength', 'flexibility'],
       longitude: generateRandomLocation().long,
       latitude: generateRandomLocation().lat,
-      images: [
-        getRandomProfilePicture(),
-        getRandomProfilePicture(),
-        getRandomProfilePicture(),
-      ],
+      images: images.map((image) => image.url),
       gym: {
         create: {
           name: 'Fit4Less',

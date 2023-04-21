@@ -12,26 +12,65 @@ type User = {
   authSteps: number;
   longitude?: number;
   latitude?: number;
+  chats?: number;
 };
+
+function Stat({ title, stat }: { title: string; stat: any }) {
+  return (
+    <div className='bg-slate-800 border-[0.5px] border-slate-700 flex-1 flex justify-center items-center flex-col rounded-2xl'>
+      <h4 className='font-medium text-2xl text-slate-400'>{title}</h4>
+      <h4 className='text-xl'>{stat}</h4>
+    </div>
+  );
+}
 
 export default function Home() {
   const [users, setUsers] = useState<User[]>([]);
+  const [displayedUsers, setDisplayedUsers] = useState<User[]>([]);
+  const [realUsers, setRealUsers] = useState<User[]>([]);
+  const [numberOfChats, setNumberOfChats] = useState(0);
   const [imageIndex, setImageIndex] = useState(0);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    // if localstorage password === env password
-    const isAuthorized =
-      localStorage.getItem('password') === process.env.NEXT_PUBLIC_PASSWORD;
+    setIsAuthorized(
+      localStorage.getItem('password') === process.env.NEXT_PUBLIC_PASSWORD
+    );
     if (isAuthorized) {
-      fetch(`${process.env.NEXT_PUBLIC_URL}/users/allUsers`).then((res) =>
-        res.json().then((data) => setUsers(data.users))
-      );
+      fetch(`${process.env.NEXT_PUBLIC_URL}/dashboard/resources`).then((res) =>
+        res.json().then((data) => {
+          setUsers(data.users);
+          setDisplayedUsers(data.users);
+          const filteredUsers = users.filter(
+            (user) => user.password === null || !user.isBot
+          );
+          setRealUsers(filteredUsers);
 
-      // const interval = setInterval(() => {
-      //   setImageIndex((prev) => (prev + 1) % 3);
-      // }, 5000);
+          setNumberOfChats(data.chats.length);
+        })
+      );
     }
-  }, []);
+  }, [isAuthorized]);
+
+  if (!isAuthorized) {
+    return (
+      <div className='flex flex-col items-center justify-center h-screen'>
+        <h1 className='text-4xl font-bold'>Enter password</h1>
+        <input
+          type='password'
+          className='mt-4 border-2 border-slate-700 text-slate-900 rounded-md px-4 py-2'
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              if (e.currentTarget.value === process.env.NEXT_PUBLIC_PASSWORD) {
+                localStorage.setItem('password', e.currentTarget.value);
+                setIsAuthorized(true);
+              }
+            }
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -42,43 +81,62 @@ export default function Home() {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <main className='max-w-5xl mx-auto'>
-        <h1>Users</h1>
-        <div>
+        <div className='min-h-[15vh] w-full flex justify-center gap-2 mt-20'>
+          <Stat title='Total Users' stat={realUsers.length} />
+          <Stat title='Chats' stat={numberOfChats} />
+          <Stat title='Chats' stat={numberOfChats} />
+        </div>
+        <div className='my-4 flex gap-2'>
           <button
+            className='bg-slate-700 text-slate-100 px-4 py-2 rounded-md'
             onClick={() => {
               const filteredUsers = users.filter(
                 (user) => user.password === null || !user.isBot
               );
-              setUsers(filteredUsers);
+              setDisplayedUsers(filteredUsers);
             }}
           >
-            Users
+            Show Real Users
+          </button>
+          <button
+            className='bg-slate-700 text-slate-100 px-4 py-2 rounded-md'
+            onClick={() => {
+              const filteredUsers = users.filter(
+                (user) => user.password !== null || user.isBot
+              );
+              setDisplayedUsers(filteredUsers);
+            }}
+          >
+            Clear
           </button>
         </div>
         <ul className='grid grid-cols-3 gap-4'>
-          {users &&
-            users?.map((user) => (
+          {displayedUsers &&
+            displayedUsers?.map((user) => (
               <li
                 key={user.id}
                 className='flex flex-col bg-slate-800 rounded-2xl overflow-auto shadow-sm'
               >
                 <div className='relative w-full h-48'>
-                  <Image
-                    src={user.images[imageIndex]}
-                    className=' object-cover'
-                    fill
-                    sizes='50%'
-                    alt='user image'
-                  />
-
-                  <div className='absolute bottom-0 left-1/2 flex items-end justify-center z-50 gap-2 rounded-full px-8 py-4 bg-slate-50/25 -translate-x-1/2'>
-                    {user.images.map((_, index) => (
-                      <span
-                        key={index}
-                        className='w-2 h-2 rounded-full bg-slate-100'
-                      />
-                    ))}
-                  </div>
+                  {user.images.length > 0 && (
+                    <Image
+                      src={user.images[imageIndex]}
+                      className=' object-cover'
+                      fill
+                      sizes='50%'
+                      alt='user image'
+                    />
+                  )}
+                  {user.images.length > 1 && (
+                    <div className='absolute bottom-0 left-1/2 flex items-end justify-center z-50 gap-2 rounded-full px-8 py-4 bg-slate-50/25 -translate-x-1/2'>
+                      {user.images.map((_, index) => (
+                        <span
+                          key={index}
+                          className='w-2 h-2 rounded-full bg-slate-100'
+                        />
+                      ))}
+                    </div>
+                  )}
                   <div className='absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-slate-800/75 to-transparent'></div>
                 </div>
                 <div className='flex flex-col text-md font-medium gap-2 p-4'>
