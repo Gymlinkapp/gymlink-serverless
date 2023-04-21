@@ -59,7 +59,7 @@ export default async function handler(
       console.log('User feed not found');
       throw new Error('User feed not found');
     }
-    const users = await findNearUsers(user.feed, user);
+    const users = await findNearUsers(user);
 
     // if the user has a chat with the user, remove the user from the feed
     let usersToAdd = users.filter((u) => {

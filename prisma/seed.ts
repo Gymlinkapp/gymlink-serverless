@@ -160,7 +160,6 @@ function generateRandomUserData(): Prisma.UserCreateInput {
         name: 'Fit4Less',
         location: {
           create: {
-            radius: 5,
             lat: generateRandomLocation().lat,
             long: generateRandomLocation().long,
           },
@@ -214,7 +213,6 @@ async function main() {
           name: 'Fit4Less',
           location: {
             create: {
-              radius: 5,
               lat: 42.300916870848894,
               long: -82.97919754434378,
             },
