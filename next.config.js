@@ -4,7 +4,11 @@ const nextConfig = {
 
   // domains
   images: {
-    domains: ['source.unsplash.com', 'ltlwfcdwjczwsvohawml.supabase.co'],
+    domains: [
+      'source.unsplash.com',
+      'ltlwfcdwjczwsvohawml.supabase.co',
+      'images.unsplash.com',
+    ],
   },
 };
 
