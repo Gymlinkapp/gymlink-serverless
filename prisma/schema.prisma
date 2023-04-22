@@ -143,6 +143,6 @@ model UserPrompt {
     answer      String
     hasAnswered Boolean @default(false)
 
-    @@unique([userId, promptId])
     @@index([promptId])
+    @@index([userId])
 }

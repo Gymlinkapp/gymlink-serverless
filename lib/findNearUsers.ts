@@ -10,6 +10,7 @@ export const findNearUsers = async (
 ): Promise<User[]> => {
   const users = await prisma.user.findMany({
     include: {
+      userPrompts: true,
       chats: {
         select: {
           participants: {
