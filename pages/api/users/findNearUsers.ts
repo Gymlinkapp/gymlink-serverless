@@ -33,22 +33,6 @@ export default async function handler(
       where: {
         email: decoded.email,
       },
-      include: {
-        userPrompts: true,
-        feed: {
-          include: {
-            chats: {
-              select: {
-                participants: {
-                  select: {
-                    id: true,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
     });
 
     if (!user) {
@@ -56,10 +40,6 @@ export default async function handler(
       throw new Error('User not found');
     }
 
-    if (!user.feed) {
-      console.log('User feed not found');
-      throw new Error('User feed not found');
-    }
     const users = await findNearUsers(user);
 
     // if the user has a chat with the user, remove the user from the feed
@@ -74,63 +54,14 @@ export default async function handler(
       return !hasChatWithUser;
     });
 
-    const userGenderFilers = user.filterGender as string[];
-    const userGoalFilters = user.filterGoals as string[];
-    const userSkillLevelFilters = user.filterSkillLevel as string[];
-    const userWorkoutFilters = user.filterWorkout as string[];
-    const userGoingTodayFilters = user.filterGoingToday as boolean;
-
-    if (
-      userGenderFilers.length > 0 ||
-      userGoalFilters.length > 0 ||
-      userSkillLevelFilters.length > 0 ||
-      userWorkoutFilters.length > 0 ||
-      userGoingTodayFilters === true ||
-      userGoingTodayFilters === false
-    ) {
-      usersToAdd = filterFeedHelper(usersToAdd, user);
-    }
-    await prisma.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        feed: {
-          connect: usersToAdd.map((user) => ({
-            id: user.id,
-          })),
-        },
-      },
-      include: {
-        feed: true,
-        split: true,
-      },
-    });
-
     let loadedMoreFeed: User[];
 
-    const totalUsers = usersToAdd.length;
-
-    // if offset is less than total users, we can load more
-    if (offset < totalUsers) {
-      console.log('we good');
-      loadedMoreFeed = usersToAdd.slice(offset, offset + limit);
-    } else {
-      console.log('we not good');
-      loadedMoreFeed = usersToAdd;
-    }
-
-    console.log(
-      loadedMoreFeed.map((u) => u.firstName),
-      offset,
-      limit,
-      totalUsers
-    );
+    // Paginate users by slicing the array based on the offset and limit
+    loadedMoreFeed = usersToAdd.slice(offset, offset + limit);
 
     res.status(200).json({
       message: 'Users found',
       users: loadedMoreFeed,
-      totalUsers,
     });
   } catch (error) {
     console.log(error);
