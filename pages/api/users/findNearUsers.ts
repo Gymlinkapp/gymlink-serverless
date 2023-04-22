@@ -126,11 +126,10 @@ export default async function handler(
       limit,
       totalUsers
     );
-    const tempUsers = usersToAdd.filter((u) => u.isBot === false);
 
     res.status(200).json({
       message: 'Users found',
-      users: tempUsers,
+      users: loadedMoreFeed,
       totalUsers,
     });
   } catch (error) {
