@@ -34,6 +34,7 @@ export default async function handler(
         email: decoded.email,
       },
       include: {
+        userPrompts: true,
         feed: {
           include: {
             chats: {
@@ -125,10 +126,11 @@ export default async function handler(
       limit,
       totalUsers
     );
+    const tempUsers = usersToAdd.filter((u) => u.isBot === false);
 
     res.status(200).json({
       message: 'Users found',
-      users: loadedMoreFeed,
+      users: tempUsers,
       totalUsers,
     });
   } catch (error) {
