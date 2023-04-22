@@ -10,7 +10,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const prompt = {
+  const gptPrompt = {
     role: 'assistant',
     content:
       'create one random prompt for a gym goer to answer to express their mood/vibe/what their doing. This prompt will allow users to quickly find connections by similarities? ',
@@ -24,17 +24,20 @@ export default async function handler(
         Authorization: `Bearer ${process.env.OPENAI_API_TOKEN}`,
       },
       body: JSON.stringify({
-        messages: [prompt],
+        messages: [gptPrompt],
         model: 'gpt-3.5-turbo',
         max_tokens: 25,
       }),
     });
 
     const data = await result.json();
-
-    return res
-      .status(200)
-      .json({ data, message: data.choices[0].message.content });
+    const prompt = data.choices[0].message.content;
+    await prisma.prompt.create({
+      data: {
+        prompt,
+      },
+    });
+    return res.status(200).json({ data, prompt });
   } catch (error) {
     console.log(error);
     throw new Error('error');
