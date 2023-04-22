@@ -36,6 +36,7 @@ export default async function handler(
       include: {
         split: true,
         feed: true,
+        userPrompts: true,
       },
     });
 
