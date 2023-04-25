@@ -13,7 +13,7 @@ export default async function handler(
   const gptPrompt = {
     role: 'assistant',
     content:
-      'create one random prompt for a gym goer to answer to express their mood/vibe/what their doing. This prompt will allow users to quickly find connections by similarities? This could include a question about their gym goals, what they are doing at the gym, or what they are doing after the gym, music they are listening to before, after, during their workouts. etc. I want to aim for a new and random prompt everyday.',
+      'create one random prompt for a gym goer to answer to express their mood/vibe/what their doing. This prompt will allow users to quickly find connections by similarities? This could include questions to gain insight about their gym goals, what they are doing at the gym, or what they are doing after the gym, music they are listening to before, after, during their workouts. etc. I want to aim for a new and random prompt everyday. The question/prompt should be short and sweet and a good way to start a conversation and connect with someone.',
   };
 
   try {
