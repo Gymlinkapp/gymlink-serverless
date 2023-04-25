@@ -38,6 +38,30 @@ export default async function handler(
       throw new Error('User not found');
     }
 
+    // if the user is at the last onboard step
+    if (user.authSteps === 6) {
+      // get the last prompt from the db and create a userPrompt for the user
+      const lastPrompt = await prisma.prompt.findFirst({
+        orderBy: {
+          id: 'desc',
+        },
+      });
+
+      if (!lastPrompt) {
+        console.log('Prompt not found');
+        throw new Error('Prompt not found');
+      }
+
+      await prisma.userPrompt.create({
+        data: {
+          userId: user.id,
+          promptId: lastPrompt.id,
+          hasAnswered: false,
+          answer: '',
+        },
+      });
+    }
+
     const updatedUser = await prisma.user.update({
       where: {
         id: user.id,
