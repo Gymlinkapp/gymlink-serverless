@@ -289,7 +289,7 @@ async function createUser(prisma: any, userData: Prisma.UserCreateInput) {
 }
 
 async function main() {
-  const numberOfUsers = 75; // Change this value to create more or fewer users
+  const numberOfUsers = 20; // Change this value to create more or fewer users
 
   for (let i = 0; i < numberOfUsers; i++) {
     const randomUserData = generateRandomUserData();
