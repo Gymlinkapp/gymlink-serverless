@@ -17,6 +17,7 @@ export default async function handler(
   };
 
   try {
+    console.log('Fetching prompt from OpenAI');
     const result = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -38,12 +39,14 @@ export default async function handler(
       },
     });
     // const prompt = "What's your gym goal this week?"; // test
+    console.log('Creating prompt in database');
     const createdPrompt = await prisma.prompt.create({
       data: {
         prompt,
       },
     });
 
+    console.log('Associating prompt with users');
     await Promise.all(
       users.map((user: User) =>
         prisma.userPrompt.create({
