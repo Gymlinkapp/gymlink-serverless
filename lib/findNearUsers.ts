@@ -15,7 +15,15 @@ export const findNearUsers = async (
           name: true,
         },
       },
-      userPrompts: true,
+      userPrompts: {
+        select: {
+          answer: true,
+          hasAnswered: true,
+          createdAt: true,
+          userId: true,
+          prompt: true,
+        },
+      },
       chats: {
         select: {
           participants: {
