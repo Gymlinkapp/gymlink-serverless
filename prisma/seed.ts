@@ -280,6 +280,94 @@ function generateRandomUserData(): Prisma.UserCreateInput {
   };
 }
 
+async function generatePosts(
+  prisma: PrismaClient,
+  user: Prisma.UserCreateInput
+) {
+  const postCount = Math.floor(Math.random() * 5) + 1; // Generate a random number between 1 and 5
+  const posts = [];
+
+  for (let i = 0; i < postCount; i++) {
+    const post = await prisma.post.create({
+      data: {
+        content: faker.lorem.paragraph(),
+        createdAt: faker.date.past(),
+        updatedAt: faker.date.recent(),
+        user: {
+          connect: {
+            email: user.email,
+          },
+        },
+      },
+    });
+
+    const likeCount = Math.floor(Math.random() * 3) + 1;
+    for (let j = 0; j < likeCount; j++) {
+      await prisma.like.create({
+        data: {
+          createdAt: faker.date.past(),
+          updatedAt: faker.date.recent(),
+          user: {
+            connect: {
+              email: user.email,
+            },
+          },
+          post: {
+            connect: {
+              id: post.id,
+            },
+          },
+        },
+      });
+    }
+
+    const commentCount = Math.floor(Math.random() * 3) + 1;
+    for (let k = 0; k < commentCount; k++) {
+      await prisma.comment.create({
+        data: {
+          content: faker.lorem.sentence(),
+          createdAt: faker.date.past(),
+          updatedAt: faker.date.recent(),
+          user: {
+            connect: {
+              email: user.email,
+            },
+          },
+          post: {
+            connect: {
+              id: post.id,
+            },
+          },
+        },
+      });
+    }
+
+    const viewCount = Math.floor(Math.random() * 10) + 1;
+    for (let l = 0; l < viewCount; l++) {
+      await prisma.view.create({
+        data: {
+          createdAt: faker.date.past(),
+          updatedAt: faker.date.recent(),
+          user: {
+            connect: {
+              email: user.email,
+            },
+          },
+          post: {
+            connect: {
+              id: post.id,
+            },
+          },
+        },
+      });
+    }
+
+    posts.push(post);
+  }
+
+  return posts;
+}
+
 async function createUser(prisma: any, userData: Prisma.UserCreateInput) {
   return await prisma.user.upsert({
     where: { email: userData.email },
@@ -294,6 +382,8 @@ async function main() {
   for (let i = 0; i < numberOfUsers; i++) {
     const randomUserData = generateRandomUserData();
     const newUser = await createUser(prisma, randomUserData);
+
+    await generatePosts(prisma, newUser);
     console.log(`Created user: ${newUser.firstName} ${newUser.lastName}`);
   }
 
