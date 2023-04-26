@@ -25,8 +25,6 @@ export default async function handler(
 ) {
   const input: Input = req.body;
 
-  console.log('test');
-
   try {
     await client.messages.create({
       body: `Your verification code is ${code}`,

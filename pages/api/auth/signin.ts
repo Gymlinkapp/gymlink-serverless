@@ -2,13 +2,14 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '@/lib/prisma';
+import { GenericData } from '@/types/GenericData';
 
 type Data = {
   email?: string;
   password?: string;
   token?: string;
   error?: string;
-};
+} & GenericData;
 
 export default async function handler(
   req: NextApiRequest,
@@ -29,17 +30,19 @@ export default async function handler(
     });
     if (!user) throw new Error('User not found');
 
-    //   const passwordsMatch = await bcrypt.compare(input.password, user.password);
-    const passwordsMatch = input.password === user.password;
+    const passwordsMatch = await bcrypt.compare(input.password, user.password);
+    // const passwordsMatch = input.password === user.password;
 
     if (!passwordsMatch) throw new Error('Incorrect password');
 
     const token = jwt.sign(
       { email: user.email },
-      process.env.JWT_SECRET as string
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: '1d',
+      }
     );
-
-    await prisma.user.update({
+    const signedInUser = await prisma.user.update({
       where: {
         id: user.id,
       },
@@ -47,10 +50,14 @@ export default async function handler(
         tempJWT: token,
       },
     });
+    console.log('user', signedInUser);
 
-    res.status(200).json({ email: user.email, password: user.password, token });
+    res.status(200).json({
+      token: signedInUser.tempJWT as string,
+      message: 'User signed in',
+    });
   } catch (error) {
     console.log('error');
-    res.status(500).json({ error: 'error' });
+    res.status(500).json({ error: 'error', message: 'error' });
   }
 }
