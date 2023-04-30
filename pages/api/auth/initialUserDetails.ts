@@ -34,8 +34,9 @@ export default async function handler(
 ) {
   const input = req.body as Input;
   try {
-    // if a user is signing up with their phone number, they won't have an account password:
-    if (!input.password) {
+    // if a user is signing up with their phone number, they have base account with just their number:
+    const hashedPassword = await bcrypt.hash(input.password, 10);
+    if (input.phoneNumber) {
       const user = await prisma.user.findUnique({
         where: {
           phoneNumber: input.phoneNumber,
@@ -64,6 +65,7 @@ export default async function handler(
         data: {
           firstName: input.firstName,
           lastName: input.lastName,
+          password: hashedPassword,
           email: input.email,
           bio: input.bio,
           age: input.age,
@@ -87,7 +89,7 @@ export default async function handler(
       return;
     }
 
-    // if a user is signing up with their email, they will have an account password:
+    // if a user is signing up with their email, they have no account just yet so we make one:
     const token = jwt.sign(
       { email: input.email },
       process.env.JWT_SECRET as string,
@@ -95,8 +97,6 @@ export default async function handler(
         expiresIn: '1d',
       }
     );
-
-    const hashedPassword = await bcrypt.hash(input.password, 10);
 
     // create a new user with no phone number
     const newUser = await prisma.user.create({
