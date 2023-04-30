@@ -1,8 +1,8 @@
-import { Params } from '@/lib/params';
 import { Twilio } from 'twilio';
 import prisma from '@/lib/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
 import { GenericData } from '@/types/GenericData';
+import { Sex, faker } from '@faker-js/faker';
 
 type Data = {} & GenericData;
 type Input = {
@@ -52,7 +52,8 @@ export default async function handler(
       const newUser = await prisma.user.create({
         data: {
           phoneNumber: input.phoneNumber,
-          email: '',
+          // needs to be a random email temporarily so that the user can be created with a unique email.
+          email: faker.internet.email(),
           password: '',
           images: [],
           tempJWT: '',
