@@ -66,6 +66,12 @@ model User {
     @@index([gymId])
 }
 
+enum PostTag {
+    ADVICE
+    QUESTION
+    GENERAL
+}
+
 model Post {
     id        String    @id @default(uuid())
     createdAt DateTime  @default(now())
@@ -73,6 +79,7 @@ model Post {
     content   String    @db.VarChar(1024)
     user      User      @relation(fields: [userId], references: [id])
     userId    String
+    tags      PostTag
     likes     Like[]
     comments  Comment[]
     views     View[]

@@ -1,6 +1,6 @@
 import { FilterType } from '../lib/filters';
 import { Sex, faker } from '@faker-js/faker';
-import { Prisma, PrismaClient, User } from '@prisma/client';
+import { PostTag, Prisma, PrismaClient, User } from '@prisma/client';
 export type Filter = {
   filter: string;
   value: string | boolean;
@@ -285,6 +285,7 @@ async function generatePosts(
   user: Prisma.UserCreateInput
 ) {
   const postCount = Math.floor(Math.random() * 5) + 1; // Generate a random number between 1 and 5
+  const tags = ['ADVICE', 'QUESTION', 'GENERAL'];
   const posts = [];
 
   for (let i = 0; i < postCount; i++) {
@@ -293,6 +294,7 @@ async function generatePosts(
         content: faker.lorem.paragraph(),
         createdAt: faker.date.past(),
         updatedAt: faker.date.recent(),
+        tags: tags[Math.floor(Math.random() * tags.length)] as PostTag,
         user: {
           connect: {
             email: user.email,
