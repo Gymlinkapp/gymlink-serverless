@@ -14,6 +14,7 @@ type Input = {
   token: string;
   firstName?: string;
   lastName?: string;
+  bio?: string;
   email?: string;
   tags?: string[];
   authSteps?: number;
@@ -70,6 +71,7 @@ export default async function handler(
         firstName: input.firstName || user.firstName,
         lastName: input.lastName || user.lastName,
         email: input.email || user.email,
+        bio: input.bio || user.bio,
         tags: (input.tags as string[]) || user.tags,
         authSteps:
           input.authSteps !== undefined ? input.authSteps : user.authSteps,
