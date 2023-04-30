@@ -16,6 +16,7 @@ export default async function handler(
     const post = await prisma.post.create({
       data: {
         content: input.content,
+        tags: 'GENERAL',
         user: {
           connect: {
             id: input.userId,
