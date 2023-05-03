@@ -1,13 +1,13 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextApiRequest, NextApiResponse } from "next";
 
-import prisma from '@/lib/prisma';
-import { GenericData } from '@/types/GenericData';
-import { Post } from '@prisma/client';
+import prisma from "@/lib/prisma";
+import { GenericData } from "@/types/GenericData";
+import { Post } from "@prisma/client";
 
 type Data = {} & GenericData;
 
 type Input = {
-  token: string;
+  userId: string;
   page?: number;
   limit?: number;
 };
@@ -18,13 +18,33 @@ export default async function handler(
 ) {
   const input = req.body as Input;
   try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: input.userId,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
     const page = input.page || 1;
     const limit = input.limit || 10;
     const offset = (page - 1) * limit;
 
     const posts = await prisma.post.findMany({
+      where: {
+        NOT: {
+          flaggedByUsers: {
+            some: { userId: input.userId },
+          },
+        },
+      },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
       include: {
         likes: true,
@@ -62,6 +82,6 @@ export default async function handler(
     });
   } catch (error) {
     console.log(error);
-    throw new Error('error');
+    throw new Error("error");
   }
 }
