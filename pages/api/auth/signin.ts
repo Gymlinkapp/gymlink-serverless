@@ -31,7 +31,7 @@ export default async function handler(
     if (!user) throw new Error('User not found');
 
     let passwordsMatch;
-    if (input.email === 'barbrajanson@gmail.com') {
+    if (input.email === 'barbrajanson@gmail.com' || input.email === 'dominicwalsh@gmail.com') {
       passwordsMatch = input.password === user.password;
     } else {
       passwordsMatch = await bcrypt.compare(input.password, user.password);
