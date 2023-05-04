@@ -29,6 +29,8 @@ model User {
     feed   User[] @relation("UserFeed")
     feedOf User[] @relation("UserFeed")
 
+    blockedUsers Json?  // Array of user ids
+
     userPrompts UserPrompt[]
     flaggedPosts FlaggedPost[]
     posts        Post[]

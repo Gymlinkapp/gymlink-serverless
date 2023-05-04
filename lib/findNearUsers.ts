@@ -1,5 +1,5 @@
-import { Gym, PrismaClient, User } from '@prisma/client';
-import { haversineDistance } from './haversineDistance';
+import { Gym, PrismaClient, User } from "@prisma/client";
+import { haversineDistance } from "./haversineDistance";
 
 const prisma = new PrismaClient();
 
@@ -9,6 +9,16 @@ export const findNearUsers = async (
   logs?: boolean
 ): Promise<User[]> => {
   const users = await prisma.user.findMany({
+    where: {
+      // Exclude users that are present in the blockedUserIds array
+      NOT: user.blockedUsers
+        ? {
+            id: {
+              in: user.blockedUsers as string[],
+            },
+          }
+        : {},
+    },
     include: {
       gym: {
         select: {
@@ -35,6 +45,7 @@ export const findNearUsers = async (
       },
     },
   });
+
   const gymLocations = await prisma.gym.findMany();
 
   async function filterUsers() {
