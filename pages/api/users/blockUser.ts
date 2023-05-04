@@ -41,7 +41,7 @@ export default async function handler(
     // Add the blocked user's id to the blockedUserIds array, if not already present
     await prisma.user.update({
       where: { id: blockingUser.id},
-      data: { blockedUsers: [blockedUser.id]},
+      data: { blockedUsers: [...(blockingUser.blockedUsers as string[]), blockedUser.id]},
     });
 
     console.log('blocking user: ', blockingUser.blockedUsers)
