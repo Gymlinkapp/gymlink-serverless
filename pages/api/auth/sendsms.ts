@@ -27,6 +27,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  res.setHeader('access-control-allow-origin', '*');
   const input: Input = req.body;
 
   if (input.baseWebAccount && input.email && input.firstName && input.lastName) {
@@ -86,6 +87,8 @@ export default async function handler(
       });
       return;
     }
+
+    return;
   }
 
   try {
