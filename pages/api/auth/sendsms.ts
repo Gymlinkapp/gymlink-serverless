@@ -27,7 +27,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  res.setHeader('access-control-allow-origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   const input: Input = req.body;
 
   if (input.baseWebAccount && input.email && input.firstName && input.lastName) {
