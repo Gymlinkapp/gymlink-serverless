@@ -30,67 +30,6 @@ export default async function handler(
   res.setHeader('Access-Control-Allow-Origin', '*');
   const input: Input = req.body;
 
-  if (input.baseWebAccount && input.email && input.firstName && input.lastName) {
-    // the user has created an account on the web and has the sufficient information to create a user
-    
-
-    // if the user already exists
-    try {
-      const user = await prisma.user.findUnique({
-        where: {
-          email: input.email,
-        },
-      });
-
-      if (!user) {
-        const newUser = await prisma.user.create({
-          data: {
-            phoneNumber: input.phoneNumber,
-            email: input.email,
-            password: '',
-            images: [],
-            tempJWT: '',
-            age: 0,
-            filterGender: [],
-            filterGoals: [],
-            filterSkillLevel: [],
-            filterWorkout: [],
-            filterGoingToday: false,
-            firstName: input.firstName,
-            lastName: input.lastName,
-            tags: [],
-            bio: '',
-            verificationCode: code,
-
-            authSteps: 1,
-          },
-        });
-
-        console.log('saved code', newUser.verificationCode);
-
-        res.status(200).json({
-          message: 'base user created',
-          code: newUser.verificationCode,
-        });
-        return;
-      }
-      res.status(200).json({
-        message: 'base user already exists',
-      });
-    } catch(
-      error
-    ) {
-      console.log(error);
-
-      res.status(401).json({
-        error: 'Unauthorized',
-      });
-      return;
-    }
-
-    return;
-  }
-
   try {
     await client.messages.create({
       body: `Your verification code is ${code}`,
