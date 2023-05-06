@@ -19,6 +19,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const input = req.body as Input;
+  res.setHeader('Access-Control-Allow-Origin', 'localhost:3000');
   if (input.baseWebAccount && input.email && input.firstName && input.lastName) {
     // if the user already exists
     try {
