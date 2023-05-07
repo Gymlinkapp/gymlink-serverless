@@ -1,6 +1,6 @@
 import { GenericData } from "@/types/GenericData";
 import { NextApiRequest, NextApiResponse } from "next";
-import prisma from '@/lib/prisma';
+import prisma from "@/lib/prisma";
 type Data = {} & GenericData;
 type Input = {
   baseWebAccount?: boolean;
@@ -19,10 +19,16 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const input = req.body as Input;
-  res.setHeader('Access-Control-Allow-Origin', 'localhost:3000');
-  if (input.baseWebAccount && input.email && input.firstName && input.lastName) {
+  res.setHeader("Access-Control-Allow-Origin", "localhost:3000");
+  if (
+    input.baseWebAccount &&
+    input.email &&
+    input.firstName &&
+    input.lastName
+  ) {
     // if the user already exists
     try {
+      // if a user exists dont create a new one
       const user = await prisma.user.findUnique({
         where: {
           email: input.email,
@@ -33,49 +39,39 @@ export default async function handler(
         const newUser = await prisma.user.create({
           data: {
             phoneNumber: generateRandomPhoneNumber(),
+            firstName: input.firstName,
+            lastName: input.lastName,
             email: input.email,
-            password: '',
+            password: "",
             images: [],
-            tempJWT: '',
+            tempJWT: "",
             age: 0,
             filterGender: [],
             filterGoals: [],
             filterSkillLevel: [],
             filterWorkout: [],
             filterGoingToday: false,
-            firstName: input.firstName,
-            lastName: input.lastName,
             tags: [],
-            bio: '',
-
-            authSteps: 1,
+            bio: "",
           },
         });
-
-        console.log('saved code', newUser.verificationCode);
-
-        res.status(200).json({
-          message: 'base user created',
-          code: newUser.verificationCode,
-        });
+        res.status(200).json(newUser);
         return;
       }
-      res.status(200).json({
-        message: 'base user already exists',
-      });
-    } catch(
-      error
-    ) {
+
+      res.status(200).json(user);
+      return;
+    } catch (error) {
       console.log(error);
 
       res.status(401).json({
-        error: 'Unauthorized',
+        error: "Unauthorized",
       });
       return;
     }
   }
 
   res.status(401).json({
-    error: 'Unauthorized',
+    error: "Unauthorized",
   });
 }
