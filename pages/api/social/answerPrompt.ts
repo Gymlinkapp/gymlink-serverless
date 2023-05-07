@@ -6,7 +6,8 @@ import { GenericData } from '@/types/GenericData';
 type Data = {} & GenericData;
 
 type Input = {
-  userId: string;
+  userId?: string;
+  email?: string;
   promptId: string;
   answer: string;
 };
@@ -15,14 +16,34 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  // Set CORS headers
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT");
+  res.setHeader("Access-Control-Allow-Headers", "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
+  // Handle the OPTIONS request
+  if (req.method === "OPTIONS") {
+    res.status(200).end();
+    return;
+  }
   const input = req.body as Input;
   console.log(input);
   try {
-    const user = await prisma.user.findUnique({
+    let user;
+    if (input.userId) {
+    user = await prisma.user.findUnique({
       where: {
         id: input.userId,
       },
     });
+    } else if (input.email) {
+      user = await prisma.user.findUnique({
+        where: {
+          email: input.email,
+        },
+      });
+    }
 
     if (!user) throw new Error('User not found');
 
