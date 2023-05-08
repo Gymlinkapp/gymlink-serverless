@@ -42,17 +42,13 @@ useEffect(() => {
   if (isAuthorized) {
     fetch(`${process.env.NEXT_PUBLIC_URL}/dashboard/resources`, {
       method: "GET",
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Content-Type": "application/json",
-      },
       })
       .then((res) => res.json())
       .then((data) => {
         setUsers(data.users);
         setDisplayedUsers(data.users);
         setNumberOfChats(data.chats.length);
-      });
+      }).catch((err) => console.log(err));
   }
 }, [isAuthorized]);
 
