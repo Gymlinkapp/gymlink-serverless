@@ -38,10 +38,12 @@ export default async function handler(
         message: "Blocked user not found",
       });
     }
+    const blockingUsersBlockedUsers = blockingUser.blockedUsers as string[];
     // Add the blocked user's id to the blockedUserIds array, if not already present
     await prisma.user.update({
       where: { id: blockingUser.id},
-      data: { blockedUsers: [...(blockingUser.blockedUsers as string[]), blockedUser.id]},
+      /* data: { blockedUsers: [...(blockingUser.blockedUsers as string[]), blockedUser.id]}, */
+      data: { blockedUsers: [...blockingUsersBlockedUsers, blockedUser.id]},
     });
 
     console.log('blocking user: ', blockingUser.blockedUsers)

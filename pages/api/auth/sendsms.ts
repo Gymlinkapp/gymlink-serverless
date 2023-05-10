@@ -71,6 +71,7 @@ export default async function handler(
           firstName: '',
           lastName: '',
           tags: [],
+          blockedUsers: [],
           bio: '',
           verificationCode: code,
 

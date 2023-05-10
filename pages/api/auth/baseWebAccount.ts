@@ -63,6 +63,7 @@ export default async function handler(
             filterWorkout: [],
             filterGoingToday: false,
             tags: [],
+            blockedUsers: [],
             bio: "",
           },
         });
